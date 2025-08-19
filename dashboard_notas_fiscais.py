@@ -78,10 +78,20 @@ if uploaded_file is not None:
 
     # Filtros interativos
     st.sidebar.header("Filtros")
-    cliente_filter = st.sidebar.multiselect("Filtrar por Cliente", options=df_unique_nf["Tomador"].unique())
-    status_filter = st.sidebar.multiselect("Filtrar por Status", options=["Pago", "Pendente"])
-    mes_filter = st.sidebar.multiselect("Filtrar por Mês", options=df_unique_nf["Mês"].unique())
 
+    # Opções únicas para cada filtro
+    clientes = df_unique_nf["Tomador"].dropna().unique()
+    status_opcoes = ["Pago", "Pendente"]
+    meses = df_unique_nf["Mês"].dropna().unique()
+
+    # Filtros
+    cliente_filter = st.sidebar.multiselect("Filtrar por Cliente", options=clientes)
+    status_filter = st.sidebar.multiselect("Filtrar por Status", options=status_opcoes)
+    mes_filter = st.sidebar.multiselect("Filtrar por Mês", options=meses)
+
+
+    
+    # Aplicando os filtros
     df_filtered = df_unique_nf.copy()
     if cliente_filter:
         df_filtered = df_filtered[df_filtered["Tomador"].isin(cliente_filter)]
@@ -92,6 +102,7 @@ if uploaded_file is not None:
 
     st.subheader("Tabela de Notas Fiscais (Filtrada)")
     st.dataframe(df_filtered)
+
 
     # Barra de pesquisa
     st.subheader("🔍 Pesquisa por qualquer campo")
