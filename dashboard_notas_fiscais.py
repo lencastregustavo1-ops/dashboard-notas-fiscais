@@ -36,7 +36,14 @@ if uploaded_file:
     if df_consolidado is not None and not df_consolidado.empty:
         # Remover duplicatas para indicadores por nota fiscal
         df_unique_nf = df_consolidado.drop_duplicates(subset=["Nota Fiscal"]).copy()
-        df_unique_nf["Status"] = df_unique_nf["Recebimento"].apply(lambda x: "Pago" if pd.notnull(x) else "Pendente")
+        
+        # Função robusta para status de pagamento
+        def status_pagamento(x):
+            if pd.isnull(x) or str(x).strip() == "":
+                return "Pendente"
+            return "Pago"
+        df_unique_nf["Status"] = df_unique_nf["Recebimento"].apply(status_pagamento)
+        
         df_unique_nf["Mês"] = pd.to_datetime(df_unique_nf["Emissão"]).dt.to_period("M").astype(str)
 
         # --- Filtros interativos ---
@@ -115,4 +122,19 @@ if uploaded_file:
 
         # --- Tabela dinâmica filtrada ---
         with st.expander("📑 Tabela de Notas Fiscais (Filtrada)", expanded=False):
-            st.dataframe(df_filtered)
+            st.dataframe(df_filtered, use_container_width=True)
+
+        # --- Barra de pesquisa ---
+        st.subheader("🔍 Pesquisa por qualquer campo")
+        search_term = st.text_input("Digite um termo para buscar")
+        if search_term:
+            mask = df_consolidado.apply(lambda row: row.astype(str).str.contains(search_term, case=False).any(), axis=1)
+            df_search = df_consolidado[mask]
+            df_search_grouped = df_search.groupby("Nota Fiscal").first().reset_index()
+            st.write(f"Resultados encontrados para: {search_term}")
+            st.dataframe(df_search_grouped, use_container_width=True)
+    else:
+        st.warning("O arquivo enviado não contém dados válidos ou está vazio.")
+else:
+    st.info("Por favor, faça upload do arquivo Excel para visualizar o dashboard.")
+
