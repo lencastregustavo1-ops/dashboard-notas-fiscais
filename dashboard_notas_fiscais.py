@@ -115,4 +115,4 @@ if uploaded_file:
 
         # --- Tabela dinâmica filtrada ---
         with st.expander("📑 Tabela de Notas Fiscais (Filtrada)", expanded=False):
-            st.dataframe(df_filtered
+            st.dataframe(df_filtered)
