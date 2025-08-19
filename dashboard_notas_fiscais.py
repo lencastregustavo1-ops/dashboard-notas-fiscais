@@ -1,5 +1,4 @@
 ### Aqui está o script completo para você usar e adaptar:
-!pip install streamlit
 
 import pandas as pd
 import streamlit as st
