@@ -5,7 +5,6 @@ import plotly.express as px
 st.set_page_config(page_title="Dashboard de Notas Fiscais", layout="wide")
 st.title("Dashboard de Notas Fiscais - CAR SP")
 
-# --- Função para carregar dados com cache ---
 @st.cache_data(show_spinner="Carregando dados...")
 def load_data(uploaded_file):
     try:
@@ -22,13 +21,11 @@ def load_data(uploaded_file):
         ]
         for col in ["Nota Fiscal", "Emissão", "Tomador", "Descrição", "Valor Bruto", "Recebimento", "Valor Líquido"]:
             df[col] = df[col].ffill()
-        df = df[df["Invoice"].notna()].copy()
-        return df
+        return df  # NÃO filtra mais por Invoice!
     except Exception as e:
         st.error(f"Erro ao carregar o arquivo: {e}")
         return None
 
-# --- Upload do arquivo ---
 uploaded_file = st.file_uploader("Faça upload do arquivo Excel das notas fiscais", type=["xlsx"])
 
 if uploaded_file:
@@ -137,4 +134,3 @@ if uploaded_file:
         st.warning("O arquivo enviado não contém dados válidos ou está vazio.")
 else:
     st.info("Por favor, faça upload do arquivo Excel para visualizar o dashboard.")
-
